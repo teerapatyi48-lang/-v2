@@ -1,0 +1,20 @@
+/** ระบบออกแบบและคำนวณระบบน้ำหยดแปลงอ้อย – Google Apps Script Web App
+ *  ไฟล์ในโปรเจกต์: Code.gs, index.html  */
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('index')
+    .setTitle('ออกแบบระบบน้ำหยดแปลงอ้อย')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+/** บันทึกผลออกแบบลง Google Sheet (สร้างชีต "Designs" ให้อัตโนมัติ) */
+function saveDesign(row) {
+  const props = PropertiesService.getScriptProperties();
+  let id = props.getProperty('SHEET_ID'), ss;
+  if (id) { ss = SpreadsheetApp.openById(id); }
+  else { ss = SpreadsheetApp.create('Sugarcane Drip Designs'); props.setProperty('SHEET_ID', ss.getId()); }
+  let sh = ss.getSheetByName('Designs') || ss.insertSheet('Designs');
+  if (sh.getLastRow() === 0) sh.appendRow(row.headers);
+  sh.appendRow(row.values);
+  return ss.getUrl();
+}
